@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import Login from './components/Login'
 import Upload from './components/Upload'
 import Library from './components/Library'
 import Dashboard from './components/Dashboard'
@@ -7,8 +8,12 @@ import ModeSelect from './components/ModeSelect'
 import PracticeQuiz from './components/PracticeQuiz'
 import TestQuiz from './components/TestQuiz'
 import Results from './components/Results'
+import { getToken, fetchMe, logout as apiLogout } from './api/auth'
 
 export default function App() {
+  const [user, setUser] = useState(null)
+  const [authChecked, setAuthChecked] = useState(false)
+
   // 'upload' | 'library' | 'dashboard' | 'pick' | 'select' | 'practice' | 'test' | 'results'
   const [screen, setScreen] = useState('upload')
   const [quizSets, setQuizSets] = useState(null)
@@ -16,6 +21,27 @@ export default function App() {
   const [activeMode, setActiveMode] = useState(null) // 'practice' | 'test'
   const [testConfig, setTestConfig] = useState(null)
   const [result, setResult] = useState(null)
+
+  // Restore a session from a stored token on first load.
+  useEffect(() => {
+    if (!getToken()) {
+      setAuthChecked(true)
+      return
+    }
+    fetchMe()
+      .then(setUser)
+      .catch(() => apiLogout())
+      .finally(() => setAuthChecked(true))
+  }, [])
+
+  function handleLogout() {
+    apiLogout()
+    setUser(null)
+    setScreen('upload')
+    setQuizSet(null)
+    setQuizSets(null)
+    setResult(null)
+  }
 
   function onLoaded(data) {
     setQuizSets(data.quizSets)
@@ -71,8 +97,29 @@ export default function App() {
     setScreen('upload')
   }
 
+  if (!authChecked) {
+    return (
+      <div className="min-h-screen bg-paper flex items-center justify-center text-sm text-muted">
+        Loading…
+      </div>
+    )
+  }
+
+  if (!user) {
+    return <Login onAuthed={setUser} />
+  }
+
   return (
     <div className="min-h-screen bg-paper">
+      <div className="border-b border-rule">
+        <div className="max-w-xl mx-auto px-6 py-3 flex items-center justify-between text-sm text-muted">
+          <span>{user.email}</span>
+          <button onClick={handleLogout} className="underline underline-offset-2 hover:text-ink">
+            Log out
+          </button>
+        </div>
+      </div>
+
       {screen === 'upload' && (
         <Upload
           onLoaded={onLoaded}

@@ -1,3 +1,5 @@
+import { authHeaders } from './auth'
+
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000'
 
 async function handle(res) {
@@ -11,13 +13,13 @@ async function handle(res) {
 export async function saveAttempt(attempt) {
   const res = await fetch(`${API_URL}/api/attempts`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...authHeaders() },
     body: JSON.stringify(attempt),
   })
   return handle(res)
 }
 
 export async function getWeakAreas() {
-  const res = await fetch(`${API_URL}/api/attempts/weak-areas`)
+  const res = await fetch(`${API_URL}/api/attempts/weak-areas`, { headers: authHeaders() })
   return handle(res) // [{ topic, total, wrong, wrongRate }, ...]
 }

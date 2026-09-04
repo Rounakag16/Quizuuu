@@ -17,6 +17,7 @@ const questionSchema = new mongoose.Schema(
 
 const quizSetSchema = new mongoose.Schema(
   {
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     title: { type: String, required: true },
     subject: { type: String, default: 'General' },
     difficulty: { type: String, default: 'mixed' },

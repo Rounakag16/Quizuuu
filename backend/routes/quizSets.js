@@ -12,7 +12,8 @@ router.post('/', async (req, res) => {
     if (!Array.isArray(quizSets) || quizSets.length === 0) {
       return res.status(400).json({ error: 'Expected a non-empty "quizSets" array.' })
     }
-    const created = await QuizSet.insertMany(quizSets)
+    const owned = quizSets.map((set) => ({ ...set, userId: req.userId }))
+    const created = await QuizSet.insertMany(owned)
     res.status(201).json({ quizSets: created })
   } catch (err) {
     console.error(err)
@@ -20,13 +21,13 @@ router.post('/', async (req, res) => {
   }
 })
 
-// GET /api/quiz-sets
-// Lightweight list for the library screen — no question bodies, just summaries.
+// GET /api/quiz-sets — only the current user's quiz sets.
 router.get('/', async (req, res) => {
   try {
-    const sets = await QuizSet.find({}, 'title subject difficulty questionCount createdAt').sort({
-      createdAt: -1,
-    })
+    const sets = await QuizSet.find(
+      { userId: req.userId },
+      'title subject difficulty questionCount createdAt',
+    ).sort({ createdAt: -1 })
     res.json(sets)
   } catch (err) {
     console.error(err)
@@ -34,10 +35,11 @@ router.get('/', async (req, res) => {
   }
 })
 
-// GET /api/quiz-sets/:id
+// GET /api/quiz-sets/:id — scoped to owner; a mismatched id looks identical
+// to a missing one, so this doesn't reveal whether the id belongs to someone else.
 router.get('/:id', async (req, res) => {
   try {
-    const set = await QuizSet.findById(req.params.id)
+    const set = await QuizSet.findOne({ _id: req.params.id, userId: req.userId })
     if (!set) return res.status(404).json({ error: 'Quiz set not found.' })
     res.json(set)
   } catch (err) {
@@ -46,10 +48,10 @@ router.get('/:id', async (req, res) => {
   }
 })
 
-// DELETE /api/quiz-sets/:id
+// DELETE /api/quiz-sets/:id — scoped to owner.
 router.delete('/:id', async (req, res) => {
   try {
-    const deleted = await QuizSet.findByIdAndDelete(req.params.id)
+    const deleted = await QuizSet.findOneAndDelete({ _id: req.params.id, userId: req.userId })
     if (!deleted) return res.status(404).json({ error: 'Quiz set not found.' })
     res.status(204).end()
   } catch (err) {

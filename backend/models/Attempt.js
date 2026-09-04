@@ -16,6 +16,7 @@ const answerSchema = new mongoose.Schema(
 
 const attemptSchema = new mongoose.Schema(
   {
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     quizSetId: { type: mongoose.Schema.Types.ObjectId, ref: 'QuizSet', required: true },
     quizTitle: { type: String, required: true }, // denormalized for display without a join
     mode: { type: String, enum: ['practice', 'test'], required: true },

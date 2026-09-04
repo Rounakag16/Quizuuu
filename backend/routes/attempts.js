@@ -1,13 +1,13 @@
 import express from 'express'
+import mongoose from 'mongoose'
 import Attempt from '../models/Attempt.js'
 
 const router = express.Router()
 
 // POST /api/attempts
-// body: { quizSetId, quizTitle, mode, timeTakenSeconds, score, total, answers: [...] }
 router.post('/', async (req, res) => {
   try {
-    const attempt = await Attempt.create(req.body)
+    const attempt = await Attempt.create({ ...req.body, userId: req.userId })
     res.status(201).json(attempt)
   } catch (err) {
     console.error(err)
@@ -15,11 +15,11 @@ router.post('/', async (req, res) => {
   }
 })
 
-// GET /api/attempts?quizSetId=... (optional filter)
-// Recent-first list, used by a per-quiz or overall attempt history view.
+// GET /api/attempts?quizSetId=... (optional filter) — current user only.
 router.get('/', async (req, res) => {
   try {
-    const filter = req.query.quizSetId ? { quizSetId: req.query.quizSetId } : {}
+    const filter = { userId: req.userId }
+    if (req.query.quizSetId) filter.quizSetId = req.query.quizSetId
     const attempts = await Attempt.find(filter).sort({ createdAt: -1 }).limit(50)
     res.json(attempts)
   } catch (err) {
@@ -28,12 +28,11 @@ router.get('/', async (req, res) => {
   }
 })
 
-// GET /api/attempts/weak-areas
-// Aggregates every answer across every attempt, grouped by topic, so a
-// user can see where they're actually going wrong rather than just a score.
+// GET /api/attempts/weak-areas — scoped to the current user's own attempts.
 router.get('/weak-areas', async (req, res) => {
   try {
     const results = await Attempt.aggregate([
+      { $match: { userId: new mongoose.Types.ObjectId(req.userId) } },
       { $unwind: '$answers' },
       {
         $group: {
