@@ -10,6 +10,7 @@ import TestQuiz from './components/TestQuiz'
 import Results from './components/Results'
 import { getToken, fetchMe, logout as apiLogout } from './api/auth'
 import { getPublicQuizSet } from './api/publicQuizSets'
+import { initAnalytics, trackPageView, trackEvent } from './lib/analytics'
 
 export default function App() {
   const [user, setUser] = useState(null)
@@ -27,6 +28,16 @@ export default function App() {
   const [testConfig, setTestConfig] = useState(null)
   const [result, setResult] = useState(null)
 
+  useEffect(() => {
+    initAnalytics()
+  }, [])
+
+  // No client-side router (single-page state machine), so a screen change
+  // is the closest equivalent to a page view — track it whenever it changes.
+  useEffect(() => {
+    trackPageView(screen)
+  }, [screen])
+
   // Shared-link flow: fetch the public quiz set and jump straight to mode select.
   useEffect(() => {
     if (!sharedToken) return
@@ -34,6 +45,7 @@ export default function App() {
       .then((qs) => {
         setQuizSet({ ...qs, shared: true })
         setScreen('select')
+        trackEvent('shared_quiz_viewed', { quiz_title: qs.title })
       })
       .catch((err) => setSharedError(err.message))
   }, [sharedToken])
@@ -83,6 +95,7 @@ export default function App() {
 
   function start({ mode, clock, durationSeconds }) {
     setActiveMode(mode)
+    trackEvent('quiz_started', { mode, quiz_title: quizSet?.title, question_count: quizSet?.questions?.length })
     if (mode === 'practice') {
       setScreen('practice')
     } else {
@@ -92,6 +105,9 @@ export default function App() {
   }
 
   function finish({ answers, timeTakenSeconds }) {
+    const total = quizSet.questions.length
+    const correct = quizSet.questions.filter((q, i) => answers[i] === q.correctAnswer).length
+    trackEvent('quiz_completed', { mode: activeMode, score: correct, total, quiz_title: quizSet.title })
     setResult({ answers, timeTakenSeconds })
     setScreen('results')
   }
@@ -105,6 +121,7 @@ export default function App() {
   function retakeMistakes() {
     const wrongQuestions = quizSet.questions.filter((q, i) => result.answers[i] !== q.correctAnswer)
     if (wrongQuestions.length === 0) return
+    trackEvent('retake_mistakes_started', { quiz_title: quizSet.title, mistake_count: wrongQuestions.length })
     setQuizSet({
       ...quizSet,
       questions: wrongQuestions,
