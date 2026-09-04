@@ -1,4 +1,5 @@
 import express from 'express'
+import crypto from 'crypto'
 import QuizSet from '../models/QuizSet.js'
 
 const router = express.Router()
@@ -53,6 +54,38 @@ router.delete('/:id', async (req, res) => {
   try {
     const deleted = await QuizSet.findOneAndDelete({ _id: req.params.id, userId: req.userId })
     if (!deleted) return res.status(404).json({ error: 'Quiz set not found.' })
+    res.status(204).end()
+  } catch (err) {
+    console.error(err)
+    res.status(400).json({ error: 'Invalid quiz set id.' })
+  }
+})
+
+// POST /api/quiz-sets/:id/share — generates (or returns the existing) share token.
+router.post('/:id/share', async (req, res) => {
+  try {
+    const set = await QuizSet.findOne({ _id: req.params.id, userId: req.userId })
+    if (!set) return res.status(404).json({ error: 'Quiz set not found.' })
+
+    if (!set.shareToken) {
+      set.shareToken = crypto.randomBytes(12).toString('hex')
+      await set.save()
+    }
+    res.json({ shareToken: set.shareToken })
+  } catch (err) {
+    console.error(err)
+    res.status(400).json({ error: 'Invalid quiz set id.' })
+  }
+})
+
+// POST /api/quiz-sets/:id/unshare — revokes the link; a new share generates a fresh token.
+router.post('/:id/unshare', async (req, res) => {
+  try {
+    const set = await QuizSet.findOneAndUpdate(
+      { _id: req.params.id, userId: req.userId },
+      { shareToken: null },
+    )
+    if (!set) return res.status(404).json({ error: 'Quiz set not found.' })
     res.status(204).end()
   } catch (err) {
     console.error(err)

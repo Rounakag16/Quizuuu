@@ -5,6 +5,7 @@ import mongoose from 'mongoose'
 import quizSetsRouter from './routes/quizSets.js'
 import attemptsRouter from './routes/attempts.js'
 import authRouter from './routes/auth.js'
+import publicQuizSetsRouter from './routes/publicQuizSets.js'
 import { authenticate } from './middleware/auth.js'
 
 const app = express()
@@ -13,6 +14,7 @@ app.use(express.json({ limit: '5mb' })) // quiz files can be sizeable
 
 app.get('/api/health', (req, res) => res.json({ ok: true }))
 app.use('/api/auth', authRouter)
+app.use('/api/public/quiz-sets', publicQuizSetsRouter) // no auth — token in the URL is the gate
 app.use('/api/quiz-sets', authenticate, quizSetsRouter)
 app.use('/api/attempts', authenticate, attemptsRouter)
 

@@ -9,10 +9,15 @@ import PracticeQuiz from './components/PracticeQuiz'
 import TestQuiz from './components/TestQuiz'
 import Results from './components/Results'
 import { getToken, fetchMe, logout as apiLogout } from './api/auth'
+import { getPublicQuizSet } from './api/publicQuizSets'
 
 export default function App() {
   const [user, setUser] = useState(null)
   const [authChecked, setAuthChecked] = useState(false)
+
+  // A ?shared=<token> URL bypasses login entirely — read once on mount.
+  const [sharedToken] = useState(() => new URLSearchParams(window.location.search).get('shared'))
+  const [sharedError, setSharedError] = useState(null)
 
   // 'upload' | 'library' | 'dashboard' | 'pick' | 'select' | 'practice' | 'test' | 'results'
   const [screen, setScreen] = useState('upload')
@@ -22,8 +27,21 @@ export default function App() {
   const [testConfig, setTestConfig] = useState(null)
   const [result, setResult] = useState(null)
 
-  // Restore a session from a stored token on first load.
+  // Shared-link flow: fetch the public quiz set and jump straight to mode select.
   useEffect(() => {
+    if (!sharedToken) return
+    getPublicQuizSet(sharedToken)
+      .then((qs) => {
+        setQuizSet({ ...qs, shared: true })
+        setScreen('select')
+      })
+      .catch((err) => setSharedError(err.message))
+  }, [sharedToken])
+
+  // Restore a session from a stored token on first load (skipped entirely
+  // for the shared-link flow, which never needs a login).
+  useEffect(() => {
+    if (sharedToken) return
     if (!getToken()) {
       setAuthChecked(true)
       return
@@ -32,7 +50,7 @@ export default function App() {
       .then(setUser)
       .catch(() => apiLogout())
       .finally(() => setAuthChecked(true))
-  }, [])
+  }, [sharedToken])
 
   function handleLogout() {
     apiLogout()
@@ -109,6 +127,62 @@ export default function App() {
   function backToUpload() {
     setQuizSets(null)
     setScreen('upload')
+  }
+
+  if (sharedToken) {
+    if (sharedError) {
+      return (
+        <div className="min-h-screen bg-paper flex items-center justify-center px-6 text-center text-sm text-incorrect">
+          Couldn't load this shared quiz — {sharedError}.
+        </div>
+      )
+    }
+    if (!quizSet) {
+      return (
+        <div className="min-h-screen bg-paper flex items-center justify-center text-sm text-muted">
+          Loading shared quiz…
+        </div>
+      )
+    }
+    return (
+      <div className="min-h-screen bg-paper">
+        <div className="border-b border-rule">
+          <div className="max-w-xl mx-auto px-6 py-3 text-sm text-muted">
+            Shared quiz &middot; viewing without an account, so this attempt won't be saved.
+          </div>
+        </div>
+
+        {screen === 'select' && <ModeSelect quizSet={quizSet} onStart={start} />}
+
+        {screen === 'practice' && (
+          <PracticeQuiz questions={quizSet.questions} onFinish={finish} />
+        )}
+
+        {screen === 'test' && (
+          <TestQuiz
+            questions={quizSet.questions}
+            clock={testConfig.clock}
+            durationSeconds={testConfig.durationSeconds}
+            onFinish={finish}
+          />
+        )}
+
+        {screen === 'results' && (
+          <Results
+            quizSet={quizSet}
+            questions={quizSet.questions}
+            answers={result.answers}
+            timeTakenSeconds={result.timeTakenSeconds}
+            mode={activeMode}
+            onRetry={retryQuiz}
+            onRetakeMistakes={retakeMistakes}
+            onNewQuiz={() => {
+              window.location.href = window.location.origin + window.location.pathname
+            }}
+          />
+        )}
+      </div>
+    )
   }
 
   if (!authChecked) {

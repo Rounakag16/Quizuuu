@@ -39,3 +39,22 @@ export async function deleteQuizSet(id) {
     throw new Error(body.error || `Request failed (${res.status})`)
   }
 }
+
+export async function shareQuizSet(id) {
+  const res = await fetch(`${API_URL}/api/quiz-sets/${id}/share`, {
+    method: 'POST',
+    headers: authHeaders(),
+  })
+  return handle(res) // { shareToken }
+}
+
+export async function unshareQuizSet(id) {
+  const res = await fetch(`${API_URL}/api/quiz-sets/${id}/unshare`, {
+    method: 'POST',
+    headers: authHeaders(),
+  })
+  if (!res.ok && res.status !== 204) {
+    const body = await res.json().catch(() => ({}))
+    throw new Error(body.error || `Request failed (${res.status})`)
+  }
+}

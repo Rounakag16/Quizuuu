@@ -12,9 +12,11 @@ export default function Results({ quizSet, questions, answers, timeTakenSeconds,
   const [saveError, setSaveError] = useState(null)
 
   useEffect(() => {
-    // Guard against double-firing (e.g. React StrictMode) and skip quizzes
-    // that were never persisted (the "try the sample quiz" shortcut has no _id).
-    if (savedRef.current || !quizSet._id) return
+    // Guard against double-firing (e.g. React StrictMode), skip quizzes that
+    // were never persisted (the "try the sample quiz" shortcut has no _id),
+    // and skip shared/view-only sessions — there's no logged-in owner of
+    // that attempt to record it against.
+    if (savedRef.current || !quizSet._id || quizSet.shared) return
     savedRef.current = true
 
     const attempt = {
@@ -46,9 +48,11 @@ export default function Results({ quizSet, questions, answers, timeTakenSeconds,
       <p className="text-sm text-muted mb-2">
         {scorePct}%{typeof timeTakenSeconds === 'number' ? ` · ${formatTime(timeTakenSeconds)} taken` : ''}
       </p>
-      {!quizSet._id && (
-        <p className="text-xs text-muted mb-8">This was the unsaved sample quiz, so this attempt wasn't recorded.</p>
-      )}
+      {!quizSet._id || quizSet.shared ? (
+        <p className="text-xs text-muted mb-8">
+          {quizSet.shared ? "This was a shared quiz, viewed without an account — this attempt wasn't recorded." : "This was the unsaved sample quiz, so this attempt wasn't recorded."}
+        </p>
+      ) : null}
       {saveError && (
         <p className="text-xs text-incorrect mb-8">Couldn't record this attempt — {saveError}.</p>
       )}

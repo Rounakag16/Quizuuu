@@ -23,6 +23,9 @@ const quizSetSchema = new mongoose.Schema(
     difficulty: { type: String, default: 'mixed' },
     questionCount: { type: Number, required: true },
     questions: { type: [questionSchema], required: true },
+    // Present only once the owner shares this quiz; the public route looks
+    // up by this token, so it doubles as "is this quiz shared at all".
+    shareToken: { type: String, default: null, unique: true, sparse: true },
   },
   { timestamps: true },
 )

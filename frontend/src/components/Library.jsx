@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { listQuizSets, getQuizSet, deleteQuizSet } from '../api/quizSets'
+import { listQuizSets, getQuizSet, deleteQuizSet, shareQuizSet } from '../api/quizSets'
 
 export default function Library({ onPick, onBack }) {
   const [sets, setSets] = useState(null)
@@ -7,6 +7,9 @@ export default function Library({ onPick, onBack }) {
   const [loadingId, setLoadingId] = useState(null)
   const [confirmingId, setConfirmingId] = useState(null)
   const [deletingId, setDeletingId] = useState(null)
+  const [sharingId, setSharingId] = useState(null)
+  const [shareLinks, setShareLinks] = useState({}) // id -> link
+  const [copiedId, setCopiedId] = useState(null)
 
   useEffect(() => {
     listQuizSets()
@@ -36,6 +39,26 @@ export default function Library({ onPick, onBack }) {
     } finally {
       setDeletingId(null)
       setConfirmingId(null)
+    }
+  }
+
+  async function share(id) {
+    setSharingId(id)
+    try {
+      const { shareToken } = await shareQuizSet(id)
+      const link = `${window.location.origin}${window.location.pathname}?shared=${shareToken}`
+      setShareLinks((prev) => ({ ...prev, [id]: link }))
+      try {
+        await navigator.clipboard.writeText(link)
+        setCopiedId(id)
+        setTimeout(() => setCopiedId(null), 2000)
+      } catch {
+        // Clipboard permission denied — the link is still shown below to copy manually.
+      }
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setSharingId(null)
     }
   }
 
@@ -72,6 +95,14 @@ export default function Library({ onPick, onBack }) {
                 </div>
               </button>
 
+              <button
+                onClick={() => share(set._id)}
+                disabled={sharingId === set._id}
+                className="px-4 text-sm text-muted hover:text-accent border-l border-rule"
+              >
+                {copiedId === set._id ? 'Copied!' : sharingId === set._id ? 'Sharing…' : 'Share'}
+              </button>
+
               {confirmingId === set._id ? (
                 <div className="flex items-center gap-2 px-4 border-l border-rule">
                   <button
@@ -98,6 +129,17 @@ export default function Library({ onPick, onBack }) {
                 </button>
               )}
             </div>
+
+            {shareLinks[set._id] && (
+              <div className="border-t border-rule p-3">
+                <input
+                  readOnly
+                  value={shareLinks[set._id]}
+                  onFocus={(e) => e.target.select()}
+                  className="w-full text-xs text-muted bg-transparent focus:outline-none"
+                />
+              </div>
+            )}
           </div>
         ))}
       </div>
