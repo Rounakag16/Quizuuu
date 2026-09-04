@@ -2,10 +2,11 @@ import { useEffect, useRef, useState } from 'react'
 import { formatTime } from '../hooks/useClock'
 import { saveAttempt } from '../api/attempts'
 
-export default function Results({ quizSet, questions, answers, timeTakenSeconds, mode, onRetry, onNewQuiz }) {
+export default function Results({ quizSet, questions, answers, timeTakenSeconds, mode, onRetry, onNewQuiz, onRetakeMistakes }) {
   const total = questions.length
   const correctCount = questions.filter((q, i) => answers[i] === q.correctAnswer).length
   const scorePct = Math.round((correctCount / total) * 100)
+  const wrongCount = total - correctCount
 
   const savedRef = useRef(false)
   const [saveError, setSaveError] = useState(null)
@@ -99,13 +100,21 @@ export default function Results({ quizSet, questions, answers, timeTakenSeconds,
         })}
       </div>
 
-      <div className="flex gap-3 mt-10">
+      <div className="flex flex-wrap gap-3 mt-10">
         <button
           onClick={onRetry}
           className="bg-ink text-paper px-5 py-2.5 text-sm font-medium"
         >
           Retry this quiz
         </button>
+        {wrongCount > 0 && (
+          <button
+            onClick={onRetakeMistakes}
+            className="border border-incorrect text-incorrect px-5 py-2.5 text-sm font-medium"
+          >
+            Retake {wrongCount} mistake{wrongCount > 1 ? 's' : ''} only
+          </button>
+        )}
         <button
           onClick={onNewQuiz}
           className="border border-ink px-5 py-2.5 text-sm font-medium"

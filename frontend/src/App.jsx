@@ -84,6 +84,20 @@ export default function App() {
     setScreen('select')
   }
 
+  function retakeMistakes() {
+    const wrongQuestions = quizSet.questions.filter((q, i) => result.answers[i] !== q.correctAnswer)
+    if (wrongQuestions.length === 0) return
+    setQuizSet({
+      ...quizSet,
+      questions: wrongQuestions,
+      questionCount: wrongQuestions.length,
+      title: `${quizSet.title} — mistakes`,
+    })
+    setResult(null)
+    setTestConfig(null)
+    setScreen('select')
+  }
+
   function newQuiz() {
     setResult(null)
     setTestConfig(null)
@@ -162,6 +176,7 @@ export default function App() {
           mode={activeMode}
           onRetry={retryQuiz}
           onNewQuiz={newQuiz}
+          onRetakeMistakes={retakeMistakes}
         />
       )}
     </div>
