@@ -1,0 +1,202 @@
+{
+    "quizSets": [
+        {
+            "title": "Operating Systems Placement CS Core OA",
+            "subject": "Operating Systems",
+            "difficulty": "mixed",
+            "questionCount": 10,
+            "questions": [
+                {
+                    "question": "Which of the following is the primary purpose of a system call in an operating system?",
+                    "topic": "Placement CS Core OA",
+                    "subtopic": "System Calls",
+                    "difficulty": "easy",
+                    "options": {
+                        "A": "To allow user programs to directly modify kernel memory",
+                        "B": "To provide a controlled interface for user programs to request OS services",
+                        "C": "To permanently store process data on disk",
+                        "D": "To increase the CPU clock speed"
+                    },
+                    "correctAnswer": "B",
+                    "explanations": {
+                        "A": "User programs normally cannot directly modify kernel memory because hardware protection separates user and kernel modes. System calls provide a controlled mechanism for requesting privileged operations.",
+                        "B": "Correct. System calls form the interface through which user-level programs request services such as file access, process creation, and memory management from the operating system.",
+                        "C": "Permanent storage is provided by secondary storage and file systems, not by the system-call mechanism itself. System calls may request file operations but do not themselves permanently store process data.",
+                        "D": "CPU clock speed is determined by hardware and processor configuration. System calls do not increase processor frequency."
+                    }
+                },
+                {
+                    "question": "A process is currently waiting for an I/O operation to complete. Which state is it most likely in?",
+                    "topic": "Placement CS Core OA",
+                    "subtopic": "Process States",
+                    "difficulty": "easy",
+                    "options": {
+                        "A": "Running",
+                        "B": "Ready",
+                        "C": "Blocked",
+                        "D": "Terminated"
+                    },
+                    "correctAnswer": "C",
+                    "explanations": {
+                        "A": "A running process is actively executing instructions on the CPU. A process waiting for I/O cannot continue execution until the required event occurs.",
+                        "B": "A ready process is waiting for CPU time, not waiting for an external event such as I/O completion.",
+                        "C": "Correct. A blocked or waiting process cannot proceed until the I/O operation or another required event completes.",
+                        "D": "A terminated process has finished execution and cannot resume. An I/O-waiting process is still active and may continue after the event occurs."
+                    }
+                },
+                {
+                    "question": "Which CPU scheduling algorithm can cause starvation because a process with a low priority may wait indefinitely?",
+                    "topic": "Placement CS Core OA",
+                    "subtopic": "CPU Scheduling",
+                    "difficulty": "easy",
+                    "options": {
+                        "A": "Priority Scheduling",
+                        "B": "Round Robin",
+                        "C": "First-Come, First-Served",
+                        "D": "FIFO Page Replacement"
+                    },
+                    "correctAnswer": "A",
+                    "explanations": {
+                        "A": "Correct. In priority scheduling, continuously arriving higher-priority processes can prevent a low-priority process from receiving CPU time, causing starvation.",
+                        "B": "Round Robin gives each ready process a time slice, so a continuously ready process eventually gets CPU time under normal assumptions.",
+                        "C": "FCFS can produce poor waiting times and convoy effects, but it does not normally cause indefinite starvation because processes are served in arrival order.",
+                        "D": "FIFO Page Replacement is a memory-management algorithm, not a CPU scheduling algorithm. Therefore, it does not determine which process receives CPU time."
+                    }
+                },
+                {
+                    "question": "Which condition is NOT one of the four necessary conditions for deadlock?",
+                    "topic": "Placement CS Core OA",
+                    "subtopic": "Deadlocks",
+                    "difficulty": "medium",
+                    "options": {
+                        "A": "Mutual Exclusion",
+                        "B": "Hold and Wait",
+                        "C": "Preemption",
+                        "D": "Circular Wait"
+                    },
+                    "correctAnswer": "C",
+                    "explanations": {
+                        "A": "Mutual exclusion is necessary because at least one resource must be non-shareable and held by only one process at a time.",
+                        "B": "Hold and wait is necessary because a process must hold at least one resource while waiting to acquire another resource.",
+                        "C": "Correct. The necessary condition is non-preemption, meaning resources cannot be forcibly taken from a process. Preemption itself is not a deadlock condition.",
+                        "D": "Circular wait is necessary: processes must form a cycle where each process waits for a resource held by the next process."
+                    }
+                },
+                {
+                    "question": "A system has a page size of 4 KB and a 32-bit virtual address. How many bits are used for the page offset?",
+                    "topic": "Placement CS Core OA",
+                    "subtopic": "Paging and Address Translation",
+                    "difficulty": "medium",
+                    "options": {
+                        "A": "10 bits",
+                        "B": "12 bits",
+                        "C": "16 bits",
+                        "D": "20 bits"
+                    },
+                    "correctAnswer": "B",
+                    "explanations": {
+                        "A": "10 bits would correspond to an offset size of 1024 bytes, which is 1 KB rather than the given 4 KB page size.",
+                        "B": "Correct. A 4 KB page contains 4096 = 2^12 bytes, so 12 address bits are required to identify the byte offset within a page.",
+                        "C": "16 offset bits would represent a page size of 2^16 bytes, or 64 KB, which is larger than the specified 4 KB.",
+                        "D": "20 bits would represent an offset range of 2^20 bytes, or 1 MB, not 4 KB."
+                    }
+                },
+                {
+                    "question": "Which page replacement algorithm can exhibit Belady's anomaly, where increasing the number of page frames can increase the number of page faults?",
+                    "topic": "Placement CS Core OA",
+                    "subtopic": "Virtual Memory",
+                    "difficulty": "medium",
+                    "options": {
+                        "A": "FIFO",
+                        "B": "LRU",
+                        "C": "Optimal",
+                        "D": "MRU"
+                    },
+                    "correctAnswer": "A",
+                    "explanations": {
+                        "A": "Correct. FIFO can exhibit Belady's anomaly because adding frames can change the replacement order in a way that produces more page faults.",
+                        "B": "LRU is a stack algorithm and does not exhibit Belady's anomaly. Its page-fault count cannot increase when additional frames are added.",
+                        "C": "The optimal replacement algorithm is also a stack algorithm and therefore does not exhibit Belady's anomaly.",
+                        "D": "MRU is not the standard example associated with Belady's anomaly. FIFO is the classic page replacement algorithm known to exhibit this behavior."
+                    }
+                },
+                {
+                    "question": "Consider three processes P1, P2, and P3 with burst times 5, 3, and 1 ms respectively. Under non-preemptive Shortest Job First scheduling, all arriving at time 0, which process executes second?",
+                    "topic": "Placement CS Core OA",
+                    "subtopic": "CPU Scheduling Algorithms",
+                    "difficulty": "medium",
+                    "options": {
+                        "A": "P1",
+                        "B": "P2",
+                        "C": "P3",
+                        "D": "All execute simultaneously"
+                    },
+                    "correctAnswer": "B",
+                    "explanations": {
+                        "A": "P1 has the longest burst time of 5 ms, so non-preemptive SJF schedules it after P3 and P2.",
+                        "B": "Correct. SJF selects the shortest available job first: P3 with 1 ms, followed by P2 with 3 ms, then P1 with 5 ms.",
+                        "C": "P3 executes first because it has the shortest burst time. It therefore cannot be the second process.",
+                        "D": "SJF is a CPU scheduling algorithm that selects one process at a time; these processes do not execute simultaneously on a single CPU."
+                    }
+                },
+                {
+                    "question": "A process requests a resource and enters a waiting state. Which mechanism allows the operating system to switch the CPU to another ready process?",
+                    "topic": "Placement CS Core OA",
+                    "subtopic": "Context Switching",
+                    "difficulty": "hard",
+                    "options": {
+                        "A": "Context switch",
+                        "B": "Page compaction",
+                        "C": "Deadlock detection",
+                        "D": "Disk formatting"
+                    },
+                    "correctAnswer": "A",
+                    "explanations": {
+                        "A": "Correct. A context switch saves the state of the currently executing process and restores the saved state of another process, allowing the CPU to execute the newly selected process.",
+                        "B": "Page compaction concerns memory organization and is unrelated to selecting another process for CPU execution.",
+                        "C": "Deadlock detection determines whether processes and resources are involved in a deadlock. It does not itself perform the CPU state-saving operation needed to switch processes.",
+                        "D": "Disk formatting prepares storage media and has no role in switching CPU execution between processes."
+                    }
+                },
+                {
+                    "question": "A system uses demand paging. If a process accesses a page that is not currently in physical memory, what happens first?",
+                    "topic": "Placement CS Core OA",
+                    "subtopic": "Page Faults",
+                    "difficulty": "hard",
+                    "options": {
+                        "A": "The page is immediately deleted from the virtual address space",
+                        "B": "A page fault trap occurs and the operating system handles the missing page",
+                        "C": "The CPU permanently terminates the process",
+                        "D": "The page is automatically loaded without OS involvement"
+                    },
+                    "correctAnswer": "B",
+                    "explanations": {
+                        "A": "A missing page is not deleted from the virtual address space. The operating system attempts to bring the required page into physical memory.",
+                        "B": "Correct. Accessing a nonresident page triggers a page fault, transferring control to the operating system so it can locate and load the page.",
+                        "C": "A page fault is a normal part of demand paging and does not imply process termination. The process usually resumes after the page is loaded successfully.",
+                        "D": "The operating system must handle the page fault and arrange for the page to be brought into memory; the CPU does not independently perform the complete operation."
+                    }
+                },
+                {
+                    "question": "Suppose a system has one instance of each of two resources, R1 and R2. Process P1 holds R1 and waits for R2, while P2 holds R2 and waits for R1. What can be concluded?",
+                    "topic": "Placement CS Core OA",
+                    "subtopic": "Deadlock Detection",
+                    "difficulty": "hard",
+                    "options": {
+                        "A": "The system is definitely experiencing deadlock",
+                        "B": "The system cannot experience deadlock because there are only two processes",
+                        "C": "The processes are both ready and will eventually execute",
+                        "D": "The situation is a race condition but not a possible deadlock"
+                    },
+                    "correctAnswer": "A",
+                    "explanations": {
+                        "A": "Correct. P1 waits for R2 held by P2, while P2 waits for R1 held by P1, creating a circular wait with non-shareable resource instances. Neither process can proceed, so the system is deadlocked.",
+                        "B": "Deadlock can occur with only two processes. In fact, two processes and two resources are sufficient to form a circular wait.",
+                        "C": "They are blocked waiting for resources, not ready to execute. Without an external change, neither can acquire the resource it needs.",
+                        "D": "A race condition involves incorrect or unpredictable behavior due to concurrent access, whereas this specific resource dependency forms a classic deadlock."
+                    }
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,107 @@
+{
+  "quizSets": [
+    {
+      "title": "Operating Systems Placement CS Core OA",
+      "subject": "Operating Systems",
+      "difficulty": "mixed",
+      "questionCount": 5,
+      "questions": [
+        {
+          "question": "Which of the following is the primary purpose of a system call in an operating system?",
+          "topic": "Placement CS Core OA",
+          "subtopic": "System Calls",
+          "difficulty": "easy",
+          "options": {
+            "A": "To allow user programs to directly modify kernel memory",
+            "B": "To provide a controlled interface for user programs to request OS services",
+            "C": "To permanently store process data on disk",
+            "D": "To increase the CPU clock speed"
+          },
+          "correctAnswer": "B",
+          "explanations": {
+            "A": "User programs normally cannot directly modify kernel memory because hardware protection separates user and kernel modes. System calls provide a controlled mechanism for requesting privileged operations.",
+            "B": "Correct. System calls form the interface through which user-level programs request services such as file access, process creation, and memory management from the operating system.",
+            "C": "Permanent storage is provided by secondary storage and file systems, not by the system-call mechanism itself.",
+            "D": "CPU clock speed is determined by hardware and processor configuration. System calls do not increase processor frequency."
+          }
+        },
+        {
+          "question": "A process is currently waiting for an I/O operation to complete. Which state is it most likely in?",
+          "topic": "Placement CS Core OA",
+          "subtopic": "Process States",
+          "difficulty": "easy",
+          "options": {
+            "A": "Running",
+            "B": "Ready",
+            "C": "Blocked",
+            "D": "Terminated"
+          },
+          "correctAnswer": "C",
+          "explanations": {
+            "A": "A running process is actively executing instructions on the CPU. A process waiting for I/O cannot continue execution until the required event occurs.",
+            "B": "A ready process is waiting for CPU time, not waiting for an external event such as I/O completion.",
+            "C": "Correct. A blocked or waiting process cannot proceed until the I/O operation or another required event completes.",
+            "D": "A terminated process has finished execution and cannot resume."
+          }
+        },
+        {
+          "question": "Which condition is NOT one of the four necessary conditions for deadlock?",
+          "topic": "Placement CS Core OA",
+          "subtopic": "Deadlocks",
+          "difficulty": "medium",
+          "options": {
+            "A": "Mutual Exclusion",
+            "B": "Hold and Wait",
+            "C": "Preemption",
+            "D": "Circular Wait"
+          },
+          "correctAnswer": "C",
+          "explanations": {
+            "A": "Mutual exclusion is necessary because at least one resource must be non-shareable and held by only one process at a time.",
+            "B": "Hold and wait is necessary because a process must hold at least one resource while waiting to acquire another.",
+            "C": "Correct. The necessary condition is non-preemption, meaning resources cannot be forcibly taken from a process. Preemption itself is not a deadlock condition.",
+            "D": "Circular wait is necessary: processes must form a cycle where each waits for a resource held by the next."
+          }
+        },
+        {
+          "question": "A system has a page size of 4 KB and a 32-bit virtual address. How many bits are used for the page offset?",
+          "topic": "Placement CS Core OA",
+          "subtopic": "Paging and Address Translation",
+          "difficulty": "medium",
+          "options": {
+            "A": "10 bits",
+            "B": "12 bits",
+            "C": "16 bits",
+            "D": "20 bits"
+          },
+          "correctAnswer": "B",
+          "explanations": {
+            "A": "10 bits would correspond to an offset of 1024 bytes (1 KB), not the given 4 KB page size.",
+            "B": "Correct. A 4 KB page contains 4096 = 2^12 bytes, so 12 address bits are required for the offset.",
+            "C": "16 offset bits would represent a page size of 64 KB, larger than 4 KB.",
+            "D": "20 bits would represent an offset range of 1 MB, not 4 KB."
+          }
+        },
+        {
+          "question": "Suppose a system has one instance of each of two resources, R1 and R2. Process P1 holds R1 and waits for R2, while P2 holds R2 and waits for R1. What can be concluded?",
+          "topic": "Placement CS Core OA",
+          "subtopic": "Deadlock Detection",
+          "difficulty": "hard",
+          "options": {
+            "A": "The system is definitely experiencing deadlock",
+            "B": "The system cannot experience deadlock because there are only two processes",
+            "C": "The processes are both ready and will eventually execute",
+            "D": "The situation is a race condition but not a possible deadlock"
+          },
+          "correctAnswer": "A",
+          "explanations": {
+            "A": "Correct. P1 waits for R2 held by P2, while P2 waits for R1 held by P1, creating a circular wait. Neither process can proceed, so the system is deadlocked.",
+            "B": "Deadlock can occur with only two processes; two processes and two resources are sufficient to form a circular wait.",
+            "C": "They are blocked waiting for resources, not ready to execute.",
+            "D": "A race condition involves unpredictable behavior from concurrent access; this specific dependency forms a classic deadlock instead."
+          }
+        }
+      ]
+    }
+  ]
+}
