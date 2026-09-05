@@ -9,7 +9,10 @@ import publicQuizSetsRouter from './routes/publicQuizSets.js'
 import { authenticate } from './middleware/auth.js'
 
 const app = express()
-app.use(cors())
+// In dev (no CORS_ORIGIN set), allow any origin for convenience.
+// In production, set CORS_ORIGIN to your deployed frontend's exact URL —
+// wildcard CORS on an authenticated API is fine for local dev, not for prod.
+app.use(cors(process.env.CORS_ORIGIN ? { origin: process.env.CORS_ORIGIN } : {}))
 app.use(express.json({ limit: '5mb' })) // quiz files can be sizeable
 
 app.get('/api/health', (req, res) => res.json({ ok: true }))
