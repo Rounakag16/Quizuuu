@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import QuestionNav from './QuestionNav'
 
 export default function PracticeQuiz({ questions, onFinish }) {
   const [index, setIndex] = useState(0)
@@ -9,6 +10,7 @@ export default function PracticeQuiz({ questions, onFinish }) {
   const selected = answers[index] ?? null
   const hasAnswered = selected !== null
   const answeredCount = Object.keys(answers).length
+  const answeredIndices = new Set(Object.keys(answers).map(Number))
 
   function choose(letter) {
     if (hasAnswered) return
@@ -34,12 +36,19 @@ export default function PracticeQuiz({ questions, onFinish }) {
         <span>{question.topic}{question.subtopic ? ` · ${question.subtopic}` : ''}</span>
       </div>
 
-      <div className="h-0.5 bg-rule mb-8">
+      <div className="h-0.5 bg-rule mb-6">
         <div
           className="h-0.5 bg-accent transition-all"
           style={{ width: `${(answeredCount / questions.length) * 100}%` }}
         />
       </div>
+
+      <QuestionNav
+        total={questions.length}
+        currentIndex={index}
+        answeredIndices={answeredIndices}
+        onJump={setIndex}
+      />
 
       <h2 className="font-serif text-xl leading-relaxed mb-6">{question.question}</h2>
 

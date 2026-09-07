@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react'
 import { useClock } from '../hooks/useClock'
 import ClockDisplay from './ClockDisplay'
+import QuestionNav from './QuestionNav'
 
 export default function TestQuiz({ questions, clock, durationSeconds, onFinish }) {
   const [index, setIndex] = useState(0)
@@ -22,6 +23,7 @@ export default function TestQuiz({ questions, clock, durationSeconds, onFinish }
   const question = questions[index]
   const isLast = index === questions.length - 1
   const answeredCount = Object.keys(answers).length
+  const answeredIndices = new Set(Object.keys(answers).map(Number))
 
   function select(letter) {
     setAnswers((prev) => ({ ...prev, [index]: letter }))
@@ -33,6 +35,13 @@ export default function TestQuiz({ questions, clock, durationSeconds, onFinish }
         <span>Question {index + 1} of {questions.length} &middot; {answeredCount} answered</span>
         <ClockDisplay mode={clock} elapsed={elapsed} remaining={remaining} />
       </div>
+
+      <QuestionNav
+        total={questions.length}
+        currentIndex={index}
+        answeredIndices={answeredIndices}
+        onJump={setIndex}
+      />
 
       <h2 className="font-serif text-xl leading-relaxed mb-6">{question.question}</h2>
 
