@@ -3,6 +3,7 @@ import Login from './components/Login'
 import Upload from './components/Upload'
 import Library from './components/Library'
 import Dashboard from './components/Dashboard'
+import PromptReference from './components/PromptReference'
 import QuizPicker from './components/QuizPicker'
 import ModeSelect from './components/ModeSelect'
 import PracticeQuiz from './components/PracticeQuiz'
@@ -20,7 +21,7 @@ export default function App() {
   const [sharedToken] = useState(() => new URLSearchParams(window.location.search).get('shared'))
   const [sharedError, setSharedError] = useState(null)
 
-  // 'upload' | 'library' | 'dashboard' | 'pick' | 'select' | 'practice' | 'test' | 'results'
+  // 'upload' | 'library' | 'dashboard' | 'prompt' | 'pick' | 'select' | 'practice' | 'test' | 'results'
   const [screen, setScreen] = useState('upload')
   const [quizSets, setQuizSets] = useState(null)
   const [quizSet, setQuizSet] = useState(null)
@@ -230,8 +231,11 @@ export default function App() {
           onLoaded={onLoaded}
           onViewLibrary={() => setScreen('library')}
           onViewDashboard={() => setScreen('dashboard')}
+          onViewPrompt={() => setScreen('prompt')}
         />
       )}
+
+      {screen === 'prompt' && <PromptReference onBack={() => setScreen('upload')} />}
 
       {screen === 'library' && (
         <Library onPick={onLibraryPick} onBack={() => setScreen('upload')} />

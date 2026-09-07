@@ -3,7 +3,7 @@ import { validateQuizFile, normalizeQuizFile } from '../utils/validateQuiz'
 import { saveQuizSets } from '../api/quizSets'
 import sampleQuiz from '../data/sampleQuiz.json'
 
-export default function Upload({ onLoaded, onViewLibrary, onViewDashboard }) {
+export default function Upload({ onLoaded, onViewLibrary, onViewDashboard, onViewPrompt }) {
   const [errors, setErrors] = useState([])
   const [dragOver, setDragOver] = useState(false)
   const [mode, setMode] = useState('file') // 'file' | 'paste'
@@ -79,6 +79,9 @@ export default function Upload({ onLoaded, onViewLibrary, onViewDashboard }) {
       <div className="flex items-center justify-between mb-1">
         <p className="text-sm text-muted">MCQ Practice</p>
         <div className="flex gap-4">
+          <button onClick={onViewPrompt} className="text-sm text-muted underline underline-offset-2">
+            Get the prompt
+          </button>
           <button onClick={onViewDashboard} className="text-sm text-muted underline underline-offset-2">
             Weak areas
           </button>
