@@ -12,7 +12,11 @@ const app = express()
 // In dev (no CORS_ORIGIN set), allow any origin for convenience.
 // In production, set CORS_ORIGIN to your deployed frontend's exact URL —
 // wildcard CORS on an authenticated API is fine for local dev, not for prod.
-app.use(cors(process.env.CORS_ORIGIN ? { origin: process.env.CORS_ORIGIN } : {}))
+// Trailing slash is stripped so "https://x.com" and "https://x.com/" both
+// match — the browser's Origin header never has one, but it's an easy typo
+// to make when copy-pasting a URL from the address bar.
+const corsOrigin = process.env.CORS_ORIGIN?.replace(/\/$/, '')
+app.use(cors(corsOrigin ? { origin: corsOrigin } : {}))
 app.use(express.json({ limit: '5mb' })) // quiz files can be sizeable
 
 app.get('/api/health', (req, res) => res.json({ ok: true }))
