@@ -25,7 +25,11 @@ const quizSetSchema = new mongoose.Schema(
     questions: { type: [questionSchema], required: true },
     // Present only once the owner shares this quiz; the public route looks
     // up by this token, so it doubles as "is this quiz shared at all".
-    shareToken: { type: String, default: null, unique: true, sparse: true },
+    // No default here on purpose: a sparse unique index only excludes
+    // documents where the field is truly absent, not ones explicitly set
+    // to null. `default: null` would write null onto every document,
+    // making all of them collide under the unique index.
+    shareToken: { type: String, unique: true, sparse: true },
   },
   { timestamps: true },
 )

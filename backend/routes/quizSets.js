@@ -81,9 +81,11 @@ router.post('/:id/share', async (req, res) => {
 // POST /api/quiz-sets/:id/unshare — revokes the link; a new share generates a fresh token.
 router.post('/:id/unshare', async (req, res) => {
   try {
+    // $unset, not "shareToken: null" — the sparse unique index only
+    // excludes documents missing the field, not ones set to null.
     const set = await QuizSet.findOneAndUpdate(
       { _id: req.params.id, userId: req.userId },
-      { shareToken: null },
+      { $unset: { shareToken: '' } },
     )
     if (!set) return res.status(404).json({ error: 'Quiz set not found.' })
     res.status(204).end()
